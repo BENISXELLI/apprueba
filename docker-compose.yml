@@ -1,18 +1,6 @@
 version: '3.8'
 
 services:
-  app:
-    image: php:8.1-apache
-    container_name: apprueba_app
-    volumes:
-      - ./:/var/www/html/apprueba_app
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-    environment:
-      - APACHE_DOCUMENT_ROOT=/var/www/html/apprueba_app/public
-    command: apache2-foreground 
 
   db:
     image: mysql:8.0
@@ -25,6 +13,19 @@ services:
       - "3306:3306"
     volumes:
       - db_data:/var/lib/mysql
+
+  app:
+    build: ./  # usa el Dockerfile de la carpeta actual
+    container_name: apprueba_app
+    volumes:
+      - ./:/var/www/html/apprueba_app
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+    environment:
+      APACHE_DOCUMENT_ROOT: /var/www/html/apprueba_app/public
+      command: bash -c "php spark migrate && apache2-foreground"
 
   phpmyadmin:
     image: phpmyadmin

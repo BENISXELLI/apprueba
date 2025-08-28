@@ -6,43 +6,41 @@ use CodeIgniter\Database\Migration;
 
 class CreateTasksTable extends Migration
 {
-    public function up()
+     public function up()
     {
-        // Crear la base de datos si no existe (opcional)
-        $this->db->query('CREATE DATABASE IF NOT EXISTS apprueba_db');
-        $this->db->query('USE apprueba_db');
-
-        // Crear la tabla
+        // Definir campos
         $this->forge->addField([
-            'id'          => [
+            'id' => [
                 'type'           => 'INT',
                 'constraint'     => 11,
                 'unsigned'       => true,
-                'auto_increment' => true
+                'auto_increment' => true,
             ],
-            'title'       => [
+            'title' => [
                 'type'       => 'VARCHAR',
                 'constraint' => '255',
-                'null'       => false
+                'null'       => false,
             ],
-            'completed'   => [
+            'completed' => [
                 'type'       => 'BOOLEAN',
                 'default'    => false,
             ],
-            'created_at'  => [
-                'type'       => 'TIMESTAMP',
-                'default'    => 'CURRENT_TIMESTAMP',
+            'created_at' => [
+                'type' => 'TIMESTAMP',
+                'null' => true,  
             ],
         ]);
 
+        // Clave primaria
         $this->forge->addKey('id', true);
-        $this->forge->createTable('tasks');
+
+        // Crear tabla
+        $this->forge->createTable('tasks', true);
     }
 
     public function down()
     {
-        $this->db->query('USE apprueba_db');
+        // Eliminar tabla si existe
         $this->forge->dropTable('tasks', true);
     }
 }
-

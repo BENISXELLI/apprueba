@@ -1,14 +1,24 @@
 FROM php:8.1-apache
 
-# Instalar dependencias necesarias para intl
-RUN apt-get update && apt-get install -y libicu-dev
+# Instalar dependencias y extensiones PHP necesarias, incluyendo nano y vim
+RUN apt-get update && \
+    apt-get install -y libicu-dev nano vim git unzip && \
+    docker-php-ext-install mysqli pdo pdo_mysql intl && \
+    docker-php-ext-enable mysqli intl && \
+    a2enmod rewrite && \
+    rm -rf /var/lib/apt/lists/*
 
-# Instalar extensiones PHP
-RUN docker-php-ext-install mysqli pdo pdo_mysql intl
+# Copiar proyecto
+COPY . /var/www/html/apprueba_app
 
-# Habilitar mysqli e intl
-RUN docker-php-ext-enable mysqli intl
+# Ajustar permisos
+RUN chown -R www-data:www-data /var/www/html/apprueba_app \
+    && chmod -R 755 /var/www/html/apprueba_app
 
-WORKDIR /var/www/html/apprueba_app/public
+RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/apprueba_app/public|' /etc/apache2/sites-available/000-default.conf
 
-CMD ["apache2-foreground"]
+WORKDIR /var/www/html/apprueba_app/
+
+EXPOSE 80
+
+CMD ["bash", "-c", "php spark migrate && apache2-foreground"]
