@@ -8,6 +8,13 @@ RUN apt-get update && \
     a2enmod rewrite && \
     rm -rf /var/lib/apt/lists/*
 
+# Instalar Xdebug y habilitar solo el modo coverage
+RUN pecl install xdebug \
+    && docker-php-ext-enable xdebug
+
+# Configurar Xdebug para coverage
+RUN echo "xdebug.mode=coverage" > /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
+
 # Copiar proyecto
 COPY . /var/www/html/apprueba_app
 
